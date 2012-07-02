@@ -13,7 +13,7 @@
   <artifactId>Fuzzyjoin</artifactId>
   <version>0.2</version>
   <packaging>jar</packaging>
-  <name>Fuzzyjoin</name>
+  <name>AIM 3: Project Fuzzyjoin 1</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
