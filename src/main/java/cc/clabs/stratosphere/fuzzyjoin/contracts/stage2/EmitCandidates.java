@@ -51,7 +51,7 @@ public class EmitCandidates extends MatchStub<PactNull, PactRecord, PactTokenlis
         int num_prefixes  = prefixes.length;
             num_prefixes -= (int) Math.ceil( THRESHOLD * (double) prefixes.length );
             num_prefixes += 1;
-        // filter records that can never be matched É
+        // filter records that can never be matched â€¦
         if ( prefixes.length < num_prefixes ) return;
         // finally emit all prefix tokens
         for (int i = 0; i < num_prefixes; i++)

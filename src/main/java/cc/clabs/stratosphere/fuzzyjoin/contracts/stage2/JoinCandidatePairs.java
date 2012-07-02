@@ -16,16 +16,12 @@ package cc.clabs.stratosphere.fuzzyjoin.contracts.stage2;
 
 import cc.clabs.stratosphere.fuzzyjoin.types.PactRecord;
 import cc.clabs.stratosphere.fuzzyjoin.types.PactRecordAndRecord;
-import cc.clabs.stratosphere.fuzzyjoin.types.PactRecordKey;
-import cc.clabs.stratosphere.fuzzyjoin.types.PactRecordJoinKeysAndSimilarity;
 import eu.stratosphere.pact.common.contract.OutputContract.*;
 import eu.stratosphere.pact.common.stub.CoGroupStub;
 import eu.stratosphere.pact.common.stub.Collector;
 import eu.stratosphere.pact.common.type.base.PactNull;
 import eu.stratosphere.pact.common.type.base.PactString;
 import java.util.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Generates distinct pairs of records that have at least one
@@ -34,8 +30,6 @@ import org.apache.commons.logging.LogFactory;
  * @author Robert Pagel <rob at clabs.cc>
  */
 public class JoinCandidatePairs extends CoGroupStub<PactString, PactRecord, PactRecord, PactRecordAndRecord, PactNull> {
-
-    private static final Log LOG = LogFactory.getLog(FilterAndValidateCandidates.class);
 
     private final static PactNull nix = new PactNull();
     

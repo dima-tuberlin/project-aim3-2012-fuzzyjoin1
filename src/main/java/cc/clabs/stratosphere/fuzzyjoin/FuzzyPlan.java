@@ -154,7 +154,7 @@ public class FuzzyPlan implements PlanAssembler, PlanAssemblerDescription {
         merger.setFirstInput( emitterR3 );
         merger.setSecondInput( emitterS3 );
 
-        // finally É
+        // finally â€¦
         FileDataSinkContract<PactDouble, PactRecordAndRecord> out =
             new FileDataSinkContract<PactDouble, PactRecordAndRecord>
             ( ResultOutputFormat.class, outputfile, "Write result to file" );
@@ -168,7 +168,7 @@ public class FuzzyPlan implements PlanAssembler, PlanAssemblerDescription {
     * {@inheritDoc}
     */
     public String getDescription() {
-        return "Parameters: none so far É ;)";
+        return "Parameters: none so far â€¦ ;)";
     }
     
 }

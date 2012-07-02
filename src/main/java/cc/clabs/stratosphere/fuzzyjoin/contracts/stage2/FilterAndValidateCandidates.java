@@ -25,8 +25,6 @@ import eu.stratosphere.pact.common.stub.ReduceStub;
 import eu.stratosphere.pact.common.type.base.PactDouble;
 import eu.stratosphere.pact.common.type.base.PactNull;
 import java.util.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Compares a candidate pair. At first candidates
@@ -40,8 +38,6 @@ import org.apache.commons.logging.LogFactory;
 @UniqueKey
 public class FilterAndValidateCandidates extends ReduceStub<PactRecordAndRecord, PactNull, PactRecordKey, PactRecordJoinKeysAndSimilarity> {
 
-    private static final Log LOG = LogFactory.getLog(FilterAndValidateCandidates.class);
-    
     private double THRESHOLD;
 
     @Override
@@ -60,15 +56,14 @@ public class FilterAndValidateCandidates extends ReduceStub<PactRecordAndRecord,
         if ( !pass_filters( x, y ) ) return;
         // calculate similarity
         double sim = similarity( x, y );
-        // check similarity ³ THRESHOLD
+        // check similarity â€¦ THRESHOLD
         if ( sim < THRESHOLD ) return;
         // a composite of the RecordKey tuple and the similarity value
         PactRecordJoinKeysAndSimilarity value = new PactRecordJoinKeysAndSimilarity
         ( a.getRecordKey(), b.getRecordKey(), new PactDouble( sim ) );
-        // emit for both sides É
+        // emit for both sides â€¦
         collector.collect( a.getRecordKey() , value );
         collector.collect( b.getRecordKey() , value );
-        LOG.info( "Emit Candidates: " + a + "|" + b );
     }
     
     private boolean pass_filters( String[] x, String[] y ) {
