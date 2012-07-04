@@ -16,22 +16,22 @@ package cc.clabs.stratosphere.fuzzyjoin.io;
 
 import cc.clabs.stratosphere.fuzzyjoin.types.*;
 import eu.stratosphere.nephele.configuration.Configuration;
-import eu.stratosphere.pact.common.contract.OutputContract.SameKey;
+import eu.stratosphere.pact.common.contract.OutputContract.UniqueKey;
 import eu.stratosphere.pact.common.io.TextInputFormat;
 import eu.stratosphere.pact.common.type.KeyValuePair;
-import eu.stratosphere.pact.common.type.base.PactNull;
 import eu.stratosphere.pact.common.type.base.PactString;
 
 /**
  * Basic input format for datasets. Each row begins with a record id
- * followed by a tab and the join attribute of the record.
+ * followed by a tab and the record itself.
  * 
- * FORMAT: "RID \t ATTRIBUTE"
+ * FORMAT: "RID \t RECORD"
+ * 
  * 
  * @author Robert Pagel <rob at clabs.cc>
  */
-@SameKey
-public class MultisetInputFormat extends TextInputFormat<PactNull, PactRecord> {
+@UniqueKey
+public class MultisetInputFormat extends TextInputFormat<PactRecordKey, PactRecord> {
     
     private String DATASET_NAME;
     
@@ -42,7 +42,7 @@ public class MultisetInputFormat extends TextInputFormat<PactNull, PactRecord> {
     }
     
     @Override
-    public boolean readLine( KeyValuePair<PactNull, PactRecord> pair, byte[] line ) {
+    public boolean readLine( KeyValuePair<PactRecordKey, PactRecord> pair, byte[] line ) {
         // split line
         String[] splits = new String( line ).split( "\t", 2 );
         if ( splits.length != 2 ) return false;
@@ -50,7 +50,7 @@ public class MultisetInputFormat extends TextInputFormat<PactNull, PactRecord> {
         PactRecordKey key = new PactRecordKey( DATASET_NAME, Integer.parseInt( splits[ 0 ] ) );
         PactRecord record = new PactRecord( key, new PactString( splits[ 1 ] ) );
         // set Key/Value
-        pair.setKey( new PactNull() );
+        pair.setKey( key );
         pair.setValue( record );
         return true;
     }

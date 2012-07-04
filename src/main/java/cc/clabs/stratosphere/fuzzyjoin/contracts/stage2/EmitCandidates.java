@@ -15,11 +15,12 @@
 package cc.clabs.stratosphere.fuzzyjoin.contracts.stage2;
 
 import cc.clabs.stratosphere.fuzzyjoin.types.PactRecord;
+import cc.clabs.stratosphere.fuzzyjoin.types.PactRecordKey;
 import cc.clabs.stratosphere.fuzzyjoin.types.PactTokenlist;
 
 import eu.stratosphere.nephele.configuration.Configuration;
 import eu.stratosphere.pact.common.stub.Collector;
-import eu.stratosphere.pact.common.stub.MatchStub;
+import eu.stratosphere.pact.common.stub.CrossStub;
 import eu.stratosphere.pact.common.type.base.PactNull;
 import eu.stratosphere.pact.common.type.base.PactString;
 
@@ -34,7 +35,7 @@ import java.util.Comparator;
  *
  * @author Robert Pagel <rob at clabs.cc>
  */
-public class EmitCandidates extends MatchStub<PactNull, PactRecord, PactTokenlist, PactString, PactRecord> {
+public class EmitCandidates extends CrossStub<PactRecordKey, PactRecord, PactNull, PactTokenlist, PactString, PactRecord> {
     
     private double THRESHOLD;
         
@@ -44,7 +45,7 @@ public class EmitCandidates extends MatchStub<PactNull, PactRecord, PactTokenlis
     }
     
     @Override
-    public void match( PactNull key, PactRecord record, final PactTokenlist GLOBAL, Collector<PactString, PactRecord> collector ) {        
+    public void cross( PactRecordKey key, PactRecord record, PactNull wayne, final PactTokenlist GLOBAL, Collector<PactString, PactRecord> collector ) {        
         // split value into possible prefix tokens
         String[] prefixes = canonicalize( record, GLOBAL );
         // calulate the number of needed prefix tokens
@@ -81,5 +82,4 @@ public class EmitCandidates extends MatchStub<PactNull, PactRecord, PactTokenlis
         });
         return prefixes;
     }
-
 }

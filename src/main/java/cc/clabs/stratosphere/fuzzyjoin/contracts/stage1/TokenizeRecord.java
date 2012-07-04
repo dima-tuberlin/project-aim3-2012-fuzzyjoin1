@@ -18,7 +18,6 @@ import cc.clabs.stratosphere.fuzzyjoin.types.*;
 import eu.stratosphere.pact.common.stub.Collector;
 import eu.stratosphere.pact.common.stub.MapStub;
 import eu.stratosphere.pact.common.type.base.PactInteger;
-import eu.stratosphere.pact.common.type.base.PactNull;
 import eu.stratosphere.pact.common.type.base.PactString;
 import java.util.StringTokenizer;
 
@@ -29,13 +28,10 @@ import java.util.StringTokenizer;
  *
  * @author Robert Pagel <rob at clabs.cc>
  */
-public class TokenizeRecord extends MapStub<PactNull, PactRecord, PactString, PactInteger> {
+public class TokenizeRecord extends MapStub<PactRecordKey, PactRecord, PactString, PactInteger> {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void map( PactNull key, PactRecord record, Collector<PactString, PactInteger> collector ) {
+    public void map( PactRecordKey key, PactRecord record, Collector<PactString, PactInteger> collector ) {
         PactInteger one = new PactInteger( 1 );
         String line = record.getValue().toLowerCase().replaceAll( "\\W", " " );        
         StringTokenizer tokenizer = new StringTokenizer( line );

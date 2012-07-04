@@ -56,7 +56,6 @@ public class FilterAndValidateCandidates extends ReduceStub<PactRecordAndRecord,
         if ( !pass_filters( x, y ) ) return;
         // calculate similarity
         double sim = similarity( x, y );
-        // check similarity … THRESHOLD
         if ( sim < THRESHOLD ) return;
         // a composite of the RecordKey tuple and the similarity value
         PactRecordJoinKeysAndSimilarity value = new PactRecordJoinKeysAndSimilarity

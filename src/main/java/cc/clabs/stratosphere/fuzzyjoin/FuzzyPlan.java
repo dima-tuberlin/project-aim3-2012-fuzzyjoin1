@@ -41,13 +41,13 @@ public class FuzzyPlan implements PlanAssembler, PlanAssemblerDescription {
         String dbfileS = "file:/home/rob/S.txt";
         String outputfile = "file:/home/rob/output.txt";
         
-        FileDataSourceContract<PactNull, PactRecord> dataR =
-            new FileDataSourceContract<PactNull, PactRecord>
+        FileDataSourceContract<PactRecordKey, PactRecord> dataR =
+            new FileDataSourceContract<PactRecordKey, PactRecord>
             ( MultisetInputFormat.class, dbfileR, "Dataset R" );
         dataR.setParameter( "DATASET_NAME", "R" );
         
-        FileDataSourceContract<PactNull, PactRecord> dataS =
-            new FileDataSourceContract<PactNull, PactRecord>
+        FileDataSourceContract<PactRecordKey, PactRecord> dataS =
+            new FileDataSourceContract<PactRecordKey, PactRecord>
             ( MultisetInputFormat.class, dbfileS, "Dataset S" );
         dataS.setParameter( "DATASET_NAME", "S" );
         
@@ -58,8 +58,8 @@ public class FuzzyPlan implements PlanAssembler, PlanAssemblerDescription {
          * |___/\__\__,_|\__, |\___|_|
          *               |___/
          */
-        MapContract<PactNull, PactRecord, PactString, PactInteger> tokenizer =
-            new MapContract<PactNull, PactRecord, PactString, PactInteger>
+        MapContract<PactRecordKey, PactRecord, PactString, PactInteger> tokenizer =
+            new MapContract<PactRecordKey, PactRecord, PactString, PactInteger>
             ( TokenizeRecord.class, "Tokenize Dataset R" );
         
         ReduceContract<PactString, PactInteger, PactInteger, PactString> counter =
@@ -73,6 +73,7 @@ public class FuzzyPlan implements PlanAssembler, PlanAssemblerDescription {
         ReduceContract<PactNull, PactTokenlist, PactNull, PactTokenlist> tokens =
             new ReduceContract<PactNull, PactTokenlist, PactNull, PactTokenlist>
             ( EmitTokenlist.class, "Emiting Tokens" );
+        tokens.setDegreeOfParallelism( 1 );
 
         // putting stage1 together
         tokenizer.setInput( dataR );
@@ -87,13 +88,13 @@ public class FuzzyPlan implements PlanAssembler, PlanAssemblerDescription {
          * |___/\__\__,_|\__, |\___|_____|
          *               |___/
          */      
-        MatchContract<PactNull, PactRecord, PactTokenlist, PactString, PactRecord> emitterR =
-            new MatchContract<PactNull, PactRecord, PactTokenlist, PactString, PactRecord>
+        CrossContract<PactRecordKey, PactRecord, PactNull, PactTokenlist, PactString, PactRecord> emitterR =
+            new CrossContract<PactRecordKey, PactRecord, PactNull, PactTokenlist, PactString, PactRecord>
             ( EmitCandidates.class, "Emit Candidates from R" );
         emitterR.setParameter( "THRESHOLD", Double.toString( THRESHOLD ));
 
-        MatchContract<PactNull, PactRecord, PactTokenlist, PactString, PactRecord> emitterS =
-            new MatchContract<PactNull, PactRecord, PactTokenlist, PactString, PactRecord>
+        CrossContract<PactRecordKey, PactRecord, PactNull, PactTokenlist, PactString, PactRecord> emitterS =
+            new CrossContract<PactRecordKey, PactRecord, PactNull, PactTokenlist, PactString, PactRecord>
             ( EmitCandidates.class, "Emit Candidates from S" );
         emitterS.setParameter( "THRESHOLD", Double.toString( THRESHOLD ));
 
@@ -122,17 +123,7 @@ public class FuzzyPlan implements PlanAssembler, PlanAssemblerDescription {
          * |___/\__\__,_|\__, |\___|____/
          *               |___/
          */
-        FileDataSourceContract<PactRecordKey, PactRecord> dataR3 =
-            new FileDataSourceContract<PactRecordKey, PactRecord>
-            ( S3MultisetInputFormat.class, dbfileR, "Dataset R" );
-        dataR3.setParameter( "DATASET_NAME", "R" );
-        
-        FileDataSourceContract<PactRecordKey, PactRecord> dataS3 =
-            new FileDataSourceContract<PactRecordKey, PactRecord>
-            ( S3MultisetInputFormat.class, dbfileS, "Dataset S" );
-        dataS3.setParameter( "DATASET_NAME", "S" );
-        
-        
+
         // java is sooo beautiful and expressive! >_<
         MatchContract<PactRecordKey, PactRecord, PactRecordJoinKeysAndSimilarity, PactRecordJoinKey, PactRecordAndDouble> emitterR3 =
             new MatchContract<PactRecordKey, PactRecord, PactRecordJoinKeysAndSimilarity, PactRecordJoinKey, PactRecordAndDouble>
@@ -147,9 +138,9 @@ public class FuzzyPlan implements PlanAssembler, PlanAssemblerDescription {
             ( MergeJoinRecords.class, "Merge join records together");
         
         // putting stage 3 together
-        emitterR3.setFirstInput( dataR3 );
+        emitterR3.setFirstInput( dataR );
         emitterR3.setSecondInput( validator );
-        emitterS3.setFirstInput( dataS3 );
+        emitterS3.setFirstInput( dataS );
         emitterS3.setSecondInput( validator );
         merger.setFirstInput( emitterR3 );
         merger.setSecondInput( emitterS3 );
