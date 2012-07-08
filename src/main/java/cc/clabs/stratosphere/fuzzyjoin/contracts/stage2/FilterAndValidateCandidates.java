@@ -67,7 +67,8 @@ public class FilterAndValidateCandidates extends ReduceStub<PactRecordAndRecord,
     
     private boolean pass_filters( String[] x, String[] y ) {
         // filter by length
-        if ( Math.abs( x.length - y.length ) > 2 ) return false;
+        if ( THRESHOLD * x.length > y.length ) return false;
+        if ( THRESHOLD * y.length > x.length ) return false;
         return true;
     }
     
