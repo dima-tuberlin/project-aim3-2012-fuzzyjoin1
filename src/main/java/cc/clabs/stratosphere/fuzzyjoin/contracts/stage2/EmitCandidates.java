@@ -30,8 +30,6 @@ import java.util.Comparator;
 
 /**
  * Emits potential candidates based on the global token ordering.
- * Input Key is PactNull to ensure that we'll get the global token
- * ordering from the first stage into every user function. 
  *
  * @author Robert Pagel <rob at clabs.cc>
  */
@@ -45,9 +43,9 @@ public class EmitCandidates extends CrossStub<PactRecordKey, PactRecord, PactNul
     }
     
     @Override
-    public void cross( PactRecordKey key, PactRecord record, PactNull wayne, final PactTokenlist GLOBAL, Collector<PactString, PactRecord> collector ) {        
+    public void cross( PactRecordKey key, PactRecord record, PactNull wayne, PactTokenlist ORDERING, Collector<PactString, PactRecord> collector ) {        
         // split value into possible prefix tokens
-        String[] prefixes = canonicalize( record, GLOBAL );
+        String[] prefixes = canonicalize( record, ORDERING );
         // calulate the number of needed prefix tokens
         int num_prefixes  = prefixes.length;
             num_prefixes -= (int) Math.ceil( THRESHOLD * (double) prefixes.length );
@@ -59,7 +57,7 @@ public class EmitCandidates extends CrossStub<PactRecordKey, PactRecord, PactNul
             collector.collect( new PactString( prefixes[ i ] ), record);
     }
     
-    private String[] canonicalize( PactRecord record, final PactTokenlist GLOBAL ) {
+    private String[] canonicalize( PactRecord record, final PactTokenlist ORDERING ) {
         // normalize the value
         String value = record.getValue().toLowerCase().replaceAll( "\\W", " " );
         String[] prefixes = value.split( " " );
@@ -72,8 +70,8 @@ public class EmitCandidates extends CrossStub<PactRecordKey, PactRecord, PactNul
         // order prefixes by global ordering
         Arrays.sort( prefixes, new Comparator<String>() {
             public int compare( String a, String b ) {
-                int posA = GLOBAL.TOKENS.indexOf( a );
-                int posB = GLOBAL.TOKENS.indexOf( b );
+                int posA = ORDERING.TOKENS.indexOf( a );
+                int posB = ORDERING.TOKENS.indexOf( b );
                 if ( posA == -1 ) posA = Integer.MAX_VALUE;
                 if ( posB == -1 ) posB = Integer.MAX_VALUE;
                 return ( posA < posB ) ? -1 :
